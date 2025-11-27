@@ -24,6 +24,7 @@ export default defineConfig([
       camelcase: "off",
       "no-unused-vars": ["error", { argsIgnorePattern: "next" }],
       "no-console": ["error", { allow: ["warn", "error", "log"] }],
+      "linebreak-style": ["error", "windows"],
     },
   },
   {
