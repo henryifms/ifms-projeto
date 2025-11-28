@@ -2,15 +2,12 @@ import * as Yup from "yup";
 import { Op } from "sequelize";
 import { parseISO } from "date-fns";
 
-import Customer from "../models/Customer.js";
-import Contact from "../models/Contact.js";
-
-class CustomersController {
+import User from "../models/User.js";
+class UsersController {
   async index(req, res) {
     const {
       name,
       email,
-      status,
       createdBefore,
       createdAfter,
       updatedBefore,
@@ -37,14 +34,6 @@ class CustomersController {
         ...where,
         email: {
           [Op.iLike]: email,
-        },
-      };
-    }
-    if (status) {
-      where = {
-        ...where,
-        status: {
-          [Op.in]: status.split(",").map((item) => item.toUpperCase()),
         },
       };
     }
@@ -87,14 +76,9 @@ class CustomersController {
       order = sort.split(",").map((item) => item.split(":"));
     }
 
-    const data = await Customer.findAll({
+    const data = await User.findAll({
+      attributes: { exclude: ["password", "password_hash"] },
       where,
-      include: [
-        {
-          model: Contact,
-          attributes: ["id", "status"],
-        },
-      ],
       order,
       limit,
       offset: limit * page - limit,
@@ -102,28 +86,28 @@ class CustomersController {
     return res.status(200).json(data);
   }
   async show(req, res) {
-    const customer = await Customer.findByPk(req.params.id);
+    const user = await User.findByPk(req.params.id);
 
-    if (!customer) {
+    if (!user) {
       return res.status(404).json();
     }
 
-    return res.status(200).json(customer);
+    return res.status(200).json(user);
   }
 
   async create(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       email: Yup.string().email().required(),
-      status: Yup.string().uppercase(),
+      password_hash: Yup.string().required(),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: "Error on validate schema." });
     }
 
-    const customer = await Customer.create(req.body);
-    return res.status(201).json(customer);
+    const user = await User.create(req.body);
+    return res.status(201).json(user);
   }
   async update(req, res) {
     const schema = Yup.object().shape({
@@ -136,27 +120,27 @@ class CustomersController {
       return res.status(400).json({ error: "Error on validate schema." });
     }
 
-    const customer = await Customer.findByPk(req.params.id);
+    const user = await User.findByPk(req.params.id);
 
-    if (!customer) {
+    if (!user) {
       return res.status(404).json();
     }
 
-    await customer.update(req.body);
+    await user.update(req.body);
 
-    return res.status(200).json(customer);
+    return res.status(200).json(user);
   }
   async destroy(req, res) {
-    const customer = await Customer.findByPk(req.params.id);
+    const user = await User.findByPk(req.params.id);
 
-    if (!customer) {
+    if (!user) {
       return res.status(404).json();
     }
 
-    await customer.destroy();
+    await user.destroy();
 
-    return res.status(200).json({ status: "Customer destroyed" });
+    return res.status(200).json({ status: "User destroyed" });
   }
 }
 
-export default new CustomersController();
+export default new UsersController();

@@ -1,39 +1,39 @@
-const navLinks = document.querySelectorAll('.nav-link');
+const navLinks = document.querySelectorAll(".nav-link");
 
-navLinks.forEach(link => {
-  link.addEventListener('click', function(event) {
+navLinks.forEach((link) => {
+  link.addEventListener("click", function (event) {
     event.preventDefault();
-    
-    navLinks.forEach(l => l.classList.remove('active'));
-    
-    this.classList.add('active');
+
+    navLinks.forEach((l) => l.classList.remove("active"));
+
+    this.classList.add("active");
   });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-  const slideContainer = document.querySelector('.carousel-slide');
-  const slides = document.querySelectorAll('.slide');
-  const nextBtn = document.getElementById('nextBtn');
-  const prevBtn = document.getElementById('prevBtn');
+document.addEventListener("DOMContentLoaded", () => {
+  const slideContainer = document.querySelector(".carousel-slide");
+  const slides = document.querySelectorAll(".slide");
+  const nextBtn = document.getElementById("nextBtn");
+  const prevBtn = document.getElementById("prevBtn");
 
   let counter = 0;
   const size = slides[0].clientWidth;
 
-  nextBtn.addEventListener('click', () => {
-      if (counter >= slides.length - 1) return;
-      counter++;
-      moveSlide();
+  nextBtn.addEventListener("click", () => {
+    if (counter >= slides.length - 1) return;
+    counter++;
+    moveSlide();
   });
 
   // Listener para o botão esquerdo (anterior)
-  prevBtn.addEventListener('click', () => {
-      if (counter <= 0) return;
-      counter--;
-      moveSlide();
+  prevBtn.addEventListener("click", () => {
+    if (counter <= 0) return;
+    counter--;
+    moveSlide();
   });
 
   function moveSlide() {
-      slideContainer.style.transform = 'translateX(' + (-size * counter) + 'px)';
+    slideContainer.style.transform = "translateX(" + -size * counter + "px)";
   }
 });
 

@@ -5,7 +5,7 @@ import { parseISO } from "date-fns";
 import Customer from "../models/Customer.js";
 import Contact from "../models/Contact.js";
 
-class CustomersController {
+class ContactsController {
   async index(req, res) {
     const {
       name,
@@ -52,7 +52,7 @@ class CustomersController {
       where = {
         ...where,
         createdAt: {
-          [Op.gte]: parseISO(createdBefore),
+          [Op.lte]: parseISO(createdBefore),
         },
       };
     }
@@ -60,7 +60,7 @@ class CustomersController {
       where = {
         ...where,
         createdAt: {
-          [Op.lte]: parseISO(createdAfter),
+          [Op.gte]: parseISO(createdAfter),
         },
       };
     }
@@ -68,7 +68,7 @@ class CustomersController {
       where = {
         ...where,
         updatedAt: {
-          [Op.gte]: parseISO(updatedBefore),
+          [Op.lte]: parseISO(updatedBefore),
         },
       };
     }
@@ -76,7 +76,7 @@ class CustomersController {
       where = {
         ...where,
         updatedAt: {
-          [Op.lte]: parseISO(updatedAfter),
+          [Op.gte]: parseISO(updatedAfter),
         },
       };
     }
@@ -177,8 +177,8 @@ class CustomersController {
 
     await contact.destroy();
 
-    return res.status(200).json({ status: "Customer destroyed" });
+    return res.status(200).json({ status: "Contact destroyed" });
   }
 }
 
-export default new CustomersController();
+export default new ContactsController();
