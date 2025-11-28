@@ -10,6 +10,25 @@ const __dirname = path.dirname(__filename);
 
 const routes = new Router();
 
+// Middleware local:
+
+// const checkPermission = (req, res, next) => {
+//   const usersAllowed = ["Henry", "Isis"];
+//   const { name } = req.query;
+
+//   if (!usersAllowed.includes(name)) {
+//     return res
+//       .status(401)
+//       .json({ error: "User not allowed to acess this resource." });
+//   }
+
+//   next();
+// };
+
+// routes.get("/", checkPermission, (req, res) => {
+//   res.sendFile(path.join(__dirname, "..", "..", "views", "index.html"));
+// });
+
 routes.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "..", "views", "index.html"));
 });
