@@ -1,7 +1,6 @@
 import * as Yup from "yup";
 import { Op } from "sequelize";
 import { parseISO } from "date-fns";
-
 import User from "../models/User.js";
 class UsersController {
   async index(req, res) {
@@ -99,21 +98,35 @@ class UsersController {
     const schema = Yup.object().shape({
       name: Yup.string().required(),
       email: Yup.string().email().required(),
-      password_hash: Yup.string().required(),
+      password: Yup.string().required().min(8),
+      passwordConfirmation: Yup.string().when("password", (password, field) =>
+        password ? field.required().oneOf([Yup.ref("password")]) : field
+      ),
     });
 
     if (!(await schema.isValid(req.body))) {
       return res.status(400).json({ error: "Error on validate schema." });
     }
 
-    const user = await User.create(req.body);
-    return res.status(201).json(user);
+    const { id, name, email, updatedAt, createdAt } = await User.create(
+      req.body
+    );
+    return res.status(201).json({ id, name, email, updatedAt, createdAt });
   }
   async update(req, res) {
     const schema = Yup.object().shape({
       name: Yup.string(),
       email: Yup.string().email(),
-      status: Yup.string().uppercase(),
+      oldPassword: Yup.string().min(8),
+      password: Yup.string()
+        .min(8)
+        .when("oldPassword", (oldPassword, field) =>
+          oldPassword ? field.required() : field
+        ),
+
+      passwordConfirmation: Yup.string().when("password", (password, field) =>
+        password ? field.required().oneOf([Yup.ref("password")]) : field
+      ),
     });
 
     if (!(await schema.isValid(req.body))) {
@@ -126,10 +139,19 @@ class UsersController {
       return res.status(404).json();
     }
 
-    await user.update(req.body);
+    const { oldPassword } = req.body;
 
-    return res.status(200).json(user);
+    if (oldPassword && !(await user.checkPassword(oldPassword))) {
+      return res.status(401).json({ error: "User password not match." });
+    }
+
+    const { id, name, email, updatedAt, createdAt } = await user.update(
+      req.body
+    );
+
+    return res.status(200).json({ id, name, email, updatedAt, createdAt });
   }
+
   async destroy(req, res) {
     const user = await User.findByPk(req.params.id);
 
